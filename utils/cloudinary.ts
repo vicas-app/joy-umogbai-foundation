@@ -1,0 +1,29 @@
+
+export const uploadToCloudinary = async (file: File): Promise<string> => {
+  const cloudName = 'dhojhfbsz'; 
+  const uploadPreset = 'joy_umogbai_foundation'; 
+  
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', uploadPreset);
+  // Note: We do not send API Secret to the client side for security. 
+  // We use the unsigned upload preset.
+
+  try {
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Upload failed');
+    }
+
+    const data = await response.json();
+    return data.secure_url;
+  } catch (error) {
+    console.error('Error uploading to Cloudinary:', error);
+    throw error;
+  }
+};
